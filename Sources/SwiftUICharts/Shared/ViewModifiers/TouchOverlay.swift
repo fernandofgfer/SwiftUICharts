@@ -36,10 +36,12 @@ internal struct TouchOverlay<T>: ViewModifier where T: CTChartData {
                 GeometryReader { geo in
                     ZStack {
                         content
-                            .highPriorityGesture(
+                            .simultaneousGesture(
                                 DragGesture(minimumDistance: minDistance, coordinateSpace: .local)
                                     .onEnded { value in
-                                        chartData.infoView.touchOverlayInfo = []
+                                        if chartData.infoView.touchOverlayInfo.count > 1 {
+                                            chartData.infoView.touchOverlayInfo = [chartData.infoView.touchOverlayInfo.last!]
+                                        }
                                         chartData.setTouchInteraction(touchLocation: value.location,
                                                                       chartSize: geo.frame(in: .local))
                                     }
