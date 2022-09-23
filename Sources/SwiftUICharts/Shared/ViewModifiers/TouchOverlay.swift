@@ -30,24 +30,24 @@ internal struct TouchOverlay<T>: ViewModifier where T: CTChartData {
         self.chartData.infoView.touchUnit = unit
     }
     
+    internal func appliesGEsture(frame: CGRect) -> some Gesture {
+        let tapGesture = DragGesture(minimumDistance: minDistance, coordinateSpace: .local)
+            .onEnded { value in
+                chartData.setTouchInteraction(touchLocation: value.location,
+                                              chartSize: frame)
+            }
+        return tapGesture.simultaneously(with: DragGesture(coordinateSpace: .global))
+    }
+    
     internal func body(content: Content) -> some View {
-        Group {
+        return Group {
             if chartData.isGreaterThanTwo() {
                 GeometryReader { geo in
                     ZStack {
                         content
-                            .highPriorityGesture(
-                                DragGesture(minimumDistance: minDistance, coordinateSpace: .local)
-                                    .onEnded { value in
-                                        chartData.setTouchInteraction(touchLocation: value.location,
-                                                                      chartSize: geo.frame(in: .local))
-                                    }
-                                    .sequenced(before: DragGesture(coordinateSpace: .global))
-                            )
-                        if chartData.infoView.isTouchCurrent {
+                            .highPriorityGesture(appliesGEsture(frame: geo.frame(in: .local)))
                             chartData.getTouchInteraction(touchLocation: chartData.infoView.touchLocation,
                                                           chartSize: geo.frame(in: .local))
-                        }
                     }
                 }
             } else { content }
