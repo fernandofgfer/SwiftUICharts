@@ -30,24 +30,22 @@ internal struct TouchOverlay<T>: ViewModifier where T: CTChartData {
         self.chartData.infoView.touchUnit = unit
     }
     
-    internal func appliesGEsture(frame: CGRect) -> some Gesture {
-        let tapGesture = DragGesture(minimumDistance: minDistance, coordinateSpace: .local)
-            .onEnded { value in
-                chartData.setTouchInteraction(touchLocation: value.location,
-                                              chartSize: frame)
-            }
-        return tapGesture.simultaneously(with: DragGesture(coordinateSpace: .global))
-    }
-    
     internal func body(content: Content) -> some View {
-        return Group {
+        Group {
             if chartData.isGreaterThanTwo() {
                 GeometryReader { geo in
                     ZStack {
                         content
-                            .highPriorityGesture(appliesGEsture(frame: geo.frame(in: .local)))
-                            chartData.getTouchInteraction(touchLocation: chartData.infoView.touchLocation,
-                                                          chartSize: geo.frame(in: .local))
+                        TappableView { location, taps in
+                            if taps == 1 {
+                                chartData.infoView.touchOverlayInfo = []
+                                chartData.setTouchInteraction(touchLocation: location,
+                                                              chartSize: geo.frame(in: .local))
+                            }
+                            
+                        }
+                        chartData.getTouchInteraction(touchLocation: chartData.infoView.touchLocation,
+                                                      chartSize: geo.frame(in: .local))
                     }
                 }
             } else { content }
@@ -113,4 +111,35 @@ extension View {
         self.modifier(EmptyModifier())
     }
     #endif
+}
+
+struct TappableView:UIViewRepresentable {
+    var tappedCallback: ((CGPoint, Int) -> Void)
+    
+    func makeUIView(context: UIViewRepresentableContext<TappableView>) -> UIView {
+        let v = UIView(frame: .zero)
+        let gesture = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.tapped))
+        gesture.numberOfTapsRequired = 1
+        v.addGestureRecognizer(gesture)
+        return v
+    }
+    
+    class Coordinator: NSObject {
+        var tappedCallback: ((CGPoint, Int) -> Void)
+        init(tappedCallback: @escaping ((CGPoint, Int) -> Void)) {
+            self.tappedCallback = tappedCallback
+        }
+        @objc func tapped(gesture:UITapGestureRecognizer) {
+            let point = gesture.location(in: gesture.view)
+            self.tappedCallback(point, 1)
+        }
+    }
+    
+    func makeCoordinator() -> TappableView.Coordinator {
+        return Coordinator(tappedCallback:self.tappedCallback)
+    }
+    
+    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<TappableView>) {
+    }
+    
 }
