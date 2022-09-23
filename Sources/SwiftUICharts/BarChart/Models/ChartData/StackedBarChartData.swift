@@ -156,13 +156,11 @@ public final class StackedBarChartData: CTMultiBarChartDataProtocol, GetDataProt
                         self.infoView.touchOverlayInfo.append(dp)
                     }
                     touchedDataPointPublisher.send(dataSets.dataSets[superIndex].dataPoints[index])
-                }
-                else {
-                    // publish an empty datapoint
-                    touchedDataPointPublisher.send(DataPoint(value: 0, description: "", group: GroupingData(title: "", colour: ColourStyle())))
+                    return
                 }
             }
         }
+        touchedDataPointPublisher.send(DataPoint(value: 0, description: "", group: GroupingData(title: "", colour: ColourStyle())))
     }
     
     public final func getPointLocation(dataSet: StackedBarDataSets, touchLocation: CGPoint, chartSize: CGRect) -> CGPoint? {
