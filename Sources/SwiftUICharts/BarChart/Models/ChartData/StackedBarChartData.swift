@@ -164,6 +164,8 @@ public final class StackedBarChartData: CTMultiBarChartDataProtocol, GetDataProt
     public final func getPointLocation(dataSet: StackedBarDataSets, touchLocation: CGPoint, chartSize: CGRect) -> CGPoint? {
         // Filter to get the right dataset based on the x axis.
         let superXSection: CGFloat = chartSize.width / CGFloat(dataSet.dataSets.count)
+        guard superXSection != 0
+        else { return nil }
         let superIndex: Int = Int((touchLocation.x) / superXSection)
         if superIndex >= 0 && superIndex < dataSet.dataSets.count {
             // Filter to get the right dataset based on the y axis.
