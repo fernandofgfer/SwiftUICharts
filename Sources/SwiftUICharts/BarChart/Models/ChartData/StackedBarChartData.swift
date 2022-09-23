@@ -157,6 +157,10 @@ public final class StackedBarChartData: CTMultiBarChartDataProtocol, GetDataProt
                     }
                     touchedDataPointPublisher.send(dataSets.dataSets[superIndex].dataPoints[index])
                 }
+                else {
+                    // publish an empty datapoint
+                    touchedDataPointPublisher.send(DataPoint(value: 0, description: "", group: GroupingData(title: "", colour: ColourStyle())))
+                }
             }
         }
     }
