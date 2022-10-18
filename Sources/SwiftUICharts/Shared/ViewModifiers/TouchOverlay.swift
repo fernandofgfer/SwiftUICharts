@@ -35,17 +35,36 @@ internal struct TouchOverlay<T>: ViewModifier where T: CTChartData {
             if chartData.isGreaterThanTwo() {
                 GeometryReader { geo in
                     ZStack {
-                        content
-                        TappableView { location, taps in
-                            if taps == 1 {
-                                chartData.infoView.touchOverlayInfo = []
-                                chartData.setTouchInteraction(touchLocation: location,
+                        Group {
+                            if chartData is LineChartData {
+                                content
+                                    .gesture(
+                                        DragGesture(minimumDistance: minDistance, coordinateSpace: .local)
+                                            .onChanged { (value) in
+                                                chartData.setTouchInteraction(touchLocation: value.location,
+                                                                              chartSize: geo.frame(in: .local))
+                                            }
+                                            .onEnded { _ in
+                                                chartData.infoView.isTouchCurrent = false
+                                                chartData.infoView.touchOverlayInfo = []
+                                            }
+                                    )
+                                
+                            }
+                            else {
+                                content
+                                TappableView { location, taps in
+                                    if taps == 1 {
+                                        chartData.infoView.touchOverlayInfo = []
+                                        chartData.setTouchInteraction(touchLocation: location,
+                                                                      chartSize: geo.frame(in: .local))
+                                    }
+                                    
+                                }
+                                chartData.getTouchInteraction(touchLocation: chartData.infoView.touchLocation,
                                                               chartSize: geo.frame(in: .local))
                             }
-                            
                         }
-                        chartData.getTouchInteraction(touchLocation: chartData.infoView.touchLocation,
-                                                      chartSize: geo.frame(in: .local))
                     }
                 }
             } else { content }
@@ -55,7 +74,7 @@ internal struct TouchOverlay<T>: ViewModifier where T: CTChartData {
 #endif
 
 extension View {
-    #if !os(tvOS)
+#if !os(tvOS)
     /**
      Adds touch interaction with the chart.
      
@@ -75,10 +94,10 @@ extension View {
      Unavailable in tvOS
      
      - Parameters:
-        - chartData: Chart data model.
-        - specifier: Decimal precision for labels.
-        - unit: Unit to put before or after the value.
-        - minDistance: The distance that the touch event needs to travel to register.
+     - chartData: Chart data model.
+     - specifier: Decimal precision for labels.
+     - unit: Unit to put before or after the value.
+     - minDistance: The distance that the touch event needs to travel to register.
      - Returns: A  new view containing the chart with a touch overlay.
      */
     public func touchOverlay<T: CTChartData>(
@@ -94,7 +113,7 @@ extension View {
                                    unit: unit,
                                    minDistance: minDistance))
     }
-    #elseif os(tvOS)
+#elseif os(tvOS)
     /**
      Adds touch interaction with the chart.
      
@@ -110,7 +129,7 @@ extension View {
     ) -> some View {
         self.modifier(EmptyModifier())
     }
-    #endif
+#endif
 }
 
 struct TappableView:UIViewRepresentable {
