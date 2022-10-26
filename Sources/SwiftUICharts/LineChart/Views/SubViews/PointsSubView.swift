@@ -39,6 +39,7 @@ internal struct PointsSubView<DS>: View where DS: CTLineChartDataSet,
     @State private var startAnimation: Bool = false
     
     internal var body: some View {
+        let selectedIndex = dataSets.dataPoints.firstIndex(where: {$0.description == "select"})
         
         switch dataSets.pointStyle.pointType {
         case .filled:
@@ -58,6 +59,7 @@ internal struct PointsSubView<DS>: View where DS: CTLineChartDataSet,
                         $0.scale(y: animationValue, anchor: .bottom)
                             .fill(dataSets.dataPoints[index].pointColour?.fill ?? dataSets.pointStyle.fillColour)
                     })
+                    .opacity(index == selectedIndex ? 1 : 0)
             }
             .animateOnAppear(disabled: disableAnimation, using: animation) {
                 self.startAnimation = true
@@ -84,6 +86,7 @@ internal struct PointsSubView<DS>: View where DS: CTLineChartDataSet,
                             .stroke(dataSets.dataPoints[index].pointColour?.border ?? dataSets.pointStyle.borderColour,
                                     lineWidth: dataSets.pointStyle.lineWidth)
                     })
+                    .opacity(index == selectedIndex ? 1 : 0)
             }
             .animateOnAppear(disabled: disableAnimation, using: animation) {
                 self.startAnimation = true
@@ -120,6 +123,7 @@ internal struct PointsSubView<DS>: View where DS: CTLineChartDataSet,
                                        pointStyle: dataSets.pointStyle.pointShape)
                                     .foregroundColor(dataSets.dataPoints[index].pointColour?.fill ?? dataSets.pointStyle.fillColour)
                     )
+                    .opacity(index == selectedIndex ? 1 : 0)
             }
             .animateOnAppear(disabled: disableAnimation, using: animation) {
                 self.startAnimation = true
