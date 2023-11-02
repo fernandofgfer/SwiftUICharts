@@ -145,12 +145,16 @@ public final class BarChartData: CTBarChartDataProtocol, GetDataProtocol, Publis
                 self.infoView.touchOverlayInfo.append(dp)
             }
             touchedDataPointPublisher.send(dataSets.dataPoints[index])
+            return
         }
+        touchedDataPointPublisher.send(DataPoint(value: 0, description: ""))
     }
     
     public final func getPointLocation(dataSet: BarDataSet, touchLocation: CGPoint, chartSize: CGRect) -> CGPoint? {
         let xSection: CGFloat = chartSize.width / CGFloat(dataSet.dataPoints.count)
         var ySection: CGFloat = chartSize.height / CGFloat(self.maxValue)
+        guard xSection != 0
+        else { return nil }
         let index: Int = Int((touchLocation.x) / xSection)
         if index >= 0 && index < dataSet.dataPoints.count {
             let x = (CGFloat(index) * xSection) + (xSection / 2)
