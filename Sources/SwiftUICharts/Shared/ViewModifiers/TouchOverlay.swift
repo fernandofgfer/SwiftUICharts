@@ -65,8 +65,10 @@ internal struct TouchOverlay<T>: ViewModifier where T: CTChartData {
                                     }
                                     
                                 }
-                                chartData.getTouchInteraction(touchLocation: chartData.infoView.touchLocation,
-                                                              chartSize: geo.frame(in: .local))
+                                if chartData.infoView.isTouchCurrent {
+                                    chartData.getTouchInteraction(touchLocation: chartData.infoView.touchLocation,
+                                                                  chartSize: geo.frame(in: .local))
+                                }
                             }
                         }
                     }
@@ -143,7 +145,7 @@ extension View {
 
 struct TappableView:UIViewRepresentable {
     var tappedCallback: ((CGPoint, Int) -> Void)
-    
+    @MainActor
     func makeUIView(context: UIViewRepresentableContext<TappableView>) -> UIView {
         let v = UIView(frame: .zero)
         let gesture = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.tapped))
