@@ -70,15 +70,14 @@ public struct GroupedBarChart<ChartData>: View where ChartData: GroupedBarChartD
                 .onAppear {
                     self.chartData.viewData.chartSize = geo.frame(in: .local)
                 }
-                .onChange(of: geo.frame(in: .local)) { value in
-                    self.chartData.viewData.chartSize = value
-                }
                 .accessibilityElement(children: .contain)
                 .accessibilityLabel(LocalizedStringKey(chartData.metadata.title))
                 .layoutNotifier(timer)
             } else { CustomNoDataView(chartData: chartData) }
         }
-        
+        .if(chartData.minValue.isLess(than: 0)) {
+            $0.scaleEffect(y: CGFloat(chartData.maxValue/(chartData.maxValue - chartData.minValue)), anchor: .top)
+        }
     }
 }
 
