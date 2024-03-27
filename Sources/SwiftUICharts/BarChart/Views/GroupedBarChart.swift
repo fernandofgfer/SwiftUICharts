@@ -67,8 +67,8 @@ public struct GroupedBarChart<ChartData>: View where ChartData: GroupedBarChartD
                         GroupedBarGroup(chartData: chartData, dataSet: dataSet)
                     }
                 }
-                .onAppear {
-                    self.chartData.viewData.chartSize = geo.frame(in: .local)
+                .onChange(of: geo.frame(in: .local)) { value in
+                    self.chartData.viewData.chartSize = value
                 }
                 .accessibilityElement(children: .contain)
                 .accessibilityLabel(LocalizedStringKey(chartData.metadata.title))
