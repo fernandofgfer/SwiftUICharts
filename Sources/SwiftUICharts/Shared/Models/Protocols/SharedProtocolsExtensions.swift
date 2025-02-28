@@ -129,7 +129,7 @@ extension CTChartData {
     @ViewBuilder public func infoLegend(info: DataPoint) -> some View {
         if let legend = self.legends.first(where: {
             $0.legend == info.legendTag
-        }) {
+        }), !legend.legend.isEmpty {
             legend.getLegendAsCircle(textColor: .primary)
         } else {
             EmptyView()
@@ -221,11 +221,11 @@ extension CTMultiDataSetProtocol where Self.DataSet.DataPoint: CTStandardDataPoi
     public func average() -> Double {
         
         self.dataSets
-            .compactMap {
-                $0.dataPoints
+            .compactMap { dataSet -> Double in
+                dataSet.dataPoints
                     .map(\.value)
                     .reduce(0, +)
-                    .divide(by: Double($0.dataPoints.count))
+                    .divide(by: Double(dataSet.dataPoints.count))
             }
             .reduce(0, +)
             .divide(by: Double(self.dataSets.count))
