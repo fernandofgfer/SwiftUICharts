@@ -208,17 +208,18 @@ internal struct LineChartStopsSubView<CD, DS>: View where CD: CTLineChartDataPro
                   ignoreZero: dataSet.style.ignoreZero)
             .ifElse(isFilled, if: {
                 $0
-                    .scale(y: animationValue, anchor: .bottom)
-                    .fill(LinearGradient(gradient: Gradient(stops:stops.map({Gradient.Stop(color: $0.color.opacity(0.5), location: $0.location)})),
-                                         startPoint: startPoint,
-                                         endPoint: endPoint))
+                    .trim(to: animationValue)
+                    .stroke(LinearGradient(gradient: Gradient(stops: stops),
+                                       startPoint: startPoint,
+                                       endPoint: endPoint),
+                        style: dataSet.style.strokeStyle.strokeToStrokeStyle())
                     .overlay (
-                        $0.stroke(LinearGradient(gradient: Gradient(stops: stops),
-                                               startPoint: startPoint,
-                                               endPoint: endPoint),
-                                style: dataSet.style.strokeStyle.strokeToStrokeStyle())
+                        $0
+                        .scale(y: animationValue, anchor: .bottom)
+                        .fill(LinearGradient(gradient: Gradient(stops:stops.map({Gradient.Stop(color: $0.color.opacity(0.5), location: $0.location)})),
+                                             startPoint: startPoint,
+                                             endPoint: endPoint))
                     )
-
             }, else: {
                 $0
                     .trim(to: animationValue)
