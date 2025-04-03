@@ -63,8 +63,8 @@ public struct ChartViewData {
      
      This gets passed in from the view modifier.
      */
-    var yAxisSpecifier: String = "%.0f"
-    
+    var yAxisSpecifier: String = "%.2f"
+
     /// Optional number formatter for the y axis labels when they are `.numeric`.
     var yAxisNumberFormatter: NumberFormatter? = nil
     
