@@ -109,7 +109,7 @@ public struct ChartViewData {
 }
 
 extension ChartViewData {
-    public func setYAxisSpecifier(specifier: String) {
+    public mutating func setYAxisSpecifier(specifier: String) {
         self.yAxisSpecifier = specifier
     }
 }
